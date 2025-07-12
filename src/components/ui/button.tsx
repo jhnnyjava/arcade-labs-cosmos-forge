@@ -18,12 +18,18 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Quantum-themed variants for ArcadeLabs
+        quantum: "gradient-nebula text-primary-foreground hover:shadow-lg hover:shadow-primary/25 hover:scale-105 transition-all duration-300",
+        cosmos: "bg-card/20 backdrop-blur-md border border-primary/30 text-foreground hover:border-primary/60 hover:bg-card/40 quantum-glow",
+        orbit: "bg-secondary text-secondary-foreground hover:bg-secondary/80 copper-glow hover:scale-105 transition-all duration-300",
+        void: "bg-background/10 backdrop-blur-sm border border-border text-foreground hover:bg-background/20 hover:border-accent",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        hero: "h-14 px-8 text-lg font-semibold",
       },
     },
     defaultVariants: {
