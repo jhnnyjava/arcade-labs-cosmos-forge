@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { 
   Cpu, 
   Rocket, 
@@ -108,23 +109,45 @@ const QuantumNavigation = () => {
                   </div>
                   
                   <div className="mt-6">
-                    <Button 
-                      variant="void" 
-                      className="w-full group-hover:border-primary/60 transition-colors duration-300"
-                    >
-                      Explore
-                      <motion.div
-                        className="ml-2"
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ 
-                          duration: 2, 
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
+                    {item.id === "makershop" ? (
+                      <Link to="/pcb-planet">
+                        <Button 
+                          variant="void" 
+                          className="w-full group-hover:border-primary/60 transition-colors duration-300"
+                        >
+                          Explore
+                          <motion.div
+                            className="ml-2"
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ 
+                              duration: 2, 
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            →
+                          </motion.div>
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button 
+                        variant="void" 
+                        className="w-full group-hover:border-primary/60 transition-colors duration-300"
                       >
-                        →
-                      </motion.div>
-                    </Button>
+                        Explore
+                        <motion.div
+                          className="ml-2"
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ 
+                            duration: 2, 
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          →
+                        </motion.div>
+                      </Button>
+                    )}
                   </div>
                 </div>
 
