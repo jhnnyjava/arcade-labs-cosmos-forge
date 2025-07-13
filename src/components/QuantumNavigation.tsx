@@ -105,10 +105,10 @@ const QuantumNavigation = () => {
           className="text-center mb-16"
         >
           <h2 className="font-space text-4xl md:text-5xl font-bold mb-4">
-            <span className="text-gradient-nebula">Neurospark</span> Navigation
+            <span className="text-gradient-nebula">ArcadeLabs</span> Navigation
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Hover-triggered quantum animations reveal infinite possibilities across our universe
+            Explore our cosmic collection of components and modules across the universe
           </p>
         </motion.div>
 
