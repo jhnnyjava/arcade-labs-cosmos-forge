@@ -108,7 +108,7 @@ const CosmicHero = () => {
           variants={itemVariants}
           className="flex flex-col items-center mb-6"
         >
-          <div className="w-32 h-32 mb-6 relative">
+          <div className="w-48 h-48 mb-8 relative">
             <img 
               src="/lovable-uploads/9ef821c3-6609-422d-a30b-438f7ca5c576.png" 
               alt="ArcadeLabs Logo" 

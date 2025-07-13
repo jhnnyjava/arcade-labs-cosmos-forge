@@ -1,11 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text, Sphere, Box } from '@react-three/drei';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, Zap } from 'lucide-react';
+import { Trash2, Plus, Zap, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 
 // Component library data
@@ -104,7 +105,8 @@ function PCBCanvas({ selectedComponents, onComponentDrop, onRemoveComponent }: {
       }}
       onDragOver={(e) => e.preventDefault()}
     >
-      <Canvas camera={{ position: [0, 5, 5], fov: 60 }}>
+      <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div></div>}>
+        <Canvas camera={{ position: [0, 5, 5], fov: 60 }}>
         <ambientLight intensity={0.4} />
         <pointLight position={[10, 10, 10]} />
         <pointLight position={[-10, -10, -10]} color="#FF6B35" intensity={0.5} />
@@ -134,7 +136,8 @@ function PCBCanvas({ selectedComponents, onComponentDrop, onRemoveComponent }: {
         ))}
         
         <OrbitControls enableZoom={true} enablePan={true} />
-      </Canvas>
+        </Canvas>
+      </Suspense>
       
       <div className="absolute top-4 left-4 text-white/70 text-sm">
         Drag components here to build your PCB
@@ -200,8 +203,18 @@ export default function PCBPlanet() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 p-6 pt-24">
       <div className="max-w-7xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link to="/">
+            <Button variant="outline" className="flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Universe
+            </Button>
+          </Link>
+        </div>
+
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             PCB Planet Designer
@@ -222,7 +235,8 @@ export default function PCBPlanet() {
             </CardHeader>
             <CardContent>
               <div className="h-96 overflow-hidden">
-                <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+                <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div></div>}>
+                  <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
                   <ambientLight intensity={0.6} />
                   <pointLight position={[10, 10, 10]} />
                   
@@ -241,7 +255,8 @@ export default function PCBPlanet() {
                   ))}
                   
                   <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1} />
-                </Canvas>
+                  </Canvas>
+                </Suspense>
               </div>
               <div className="mt-4 text-sm text-muted-foreground">
                 Click components to add them to your PCB

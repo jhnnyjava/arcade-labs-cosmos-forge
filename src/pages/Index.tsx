@@ -4,10 +4,9 @@ import ProductConstellation from "@/components/ProductConstellation";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pt-20">
       <CosmicHero />
       <QuantumNavigation />
-      <ProductConstellation />
     </div>
   );
 };

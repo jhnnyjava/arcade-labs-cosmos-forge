@@ -68,6 +68,50 @@ All colors MUST be HSL.
     --sidebar-ring: 258 100% 50%;
   }
 
+  .light {
+    /* Light mode theme */
+    --background: 0 0% 100%;
+    --foreground: 220 30% 7%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 7%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 7%;
+
+    /* Nebula Purple Primary */
+    --primary: 258 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 258 80% 60%;
+
+    /* PCB Copper Secondary */
+    --secondary: 16 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 10% 40%;
+
+    /* Cosmic Accent */
+    --accent: 280 100% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 20% 88%;
+    --input: 220 20% 96%;
+    --ring: 258 100% 40%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 220 30% 15%;
+    --sidebar-primary: 258 100% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 96%;
+    --sidebar-accent-foreground: 220 30% 15%;
+    --sidebar-border: 220 20% 88%;
+    --sidebar-ring: 258 100% 40%;
+  }
+
   .dark {
     /* Dark mode uses same quantum theme */
     --background: 220 30% 7%;
