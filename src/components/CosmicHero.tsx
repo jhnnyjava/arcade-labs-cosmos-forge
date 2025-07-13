@@ -104,21 +104,31 @@ const CosmicHero = () => {
           </span>
         </motion.div>
 
-        <motion.h1 
+        <motion.div 
           variants={itemVariants}
-          className="font-space text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
+          className="flex flex-col items-center mb-6"
         >
-          <span className="text-gradient-nebula">ArcadeLabs</span>
-          <br />
-          <span className="text-foreground">Universe</span>
-        </motion.h1>
+          <div className="w-32 h-32 mb-6 relative">
+            <img 
+              src="/lovable-uploads/9ef821c3-6609-422d-a30b-438f7ca5c576.png" 
+              alt="ArcadeLabs Logo" 
+              className="w-full h-full object-contain quantum-glow"
+            />
+          </div>
+          
+          <h1 className="font-space text-5xl md:text-7xl lg:text-8xl font-bold leading-tight text-center">
+            <span className="text-gradient-nebula">ArcadeLabs</span>
+            <br />
+            <span className="text-foreground">Universe</span>
+          </h1>
+        </motion.div>
 
         <motion.p 
           variants={itemVariants}
           className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed"
         >
-          Where quantum leaps in hardware, software, and aerospace education collide. 
-          Navigate floating PCB constellations and witness the future materializing.
+          <span className="text-gradient-pcb font-semibold">Human-Level Intelligence</span> meets quantum fabrication. 
+          Navigate orbital stations, design in 3D space, and launch your innovations from Nairobi to the cosmos.
         </motion.p>
 
         <motion.div 
