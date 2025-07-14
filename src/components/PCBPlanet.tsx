@@ -37,13 +37,19 @@ function FloatingComponent({ component, position, onSelect, isSelected }: {
 
   return (
     <group position={position}>
-      <Box
+      <mesh
         ref={meshRef}
-        args={[0.8, 0.4, 0.1]}
         onClick={onSelect}
-        onPointerOver={(e) => (e.object.scale.setScalar(1.1))}
-        onPointerOut={(e) => (e.object.scale.setScalar(1))}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          e.object.scale.setScalar(1.1);
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          e.object.scale.setScalar(1);
+        }}
       >
+        <boxGeometry args={[0.8, 0.4, 0.1]} />
         <meshStandardMaterial 
           color={component.color} 
           transparent 
@@ -51,7 +57,7 @@ function FloatingComponent({ component, position, onSelect, isSelected }: {
           emissive={component.color}
           emissiveIntensity={isSelected ? 0.3 : 0.1}
         />
-      </Box>
+      </mesh>
       <Text
         position={[0, -0.5, 0]}
         fontSize={0.1}
@@ -112,27 +118,28 @@ function PCBCanvas({ selectedComponents, onComponentDrop, onRemoveComponent }: {
         <pointLight position={[-10, -10, -10]} color="#FF6B35" intensity={0.5} />
         
         {/* PCB Base */}
-        <Box args={[8, 0.1, 5]} position={[0, -0.5, 0]}>
+        <mesh position={[0, -0.5, 0]}>
+          <boxGeometry args={[8, 0.1, 5]} />
           <meshStandardMaterial color="#0A0A18" />
-        </Box>
+        </mesh>
         
         {/* Grid Lines */}
         <primitive object={new THREE.GridHelper(8, 20, '#6A00FF', '#6A00FF')} position={[0, -0.4, 0]} />
         
         {/* Placed Components */}
         {selectedComponents.map((item, index) => (
-          <Box
+          <mesh
             key={`${item.component.id}-${index}`}
-            args={[0.6, 0.3, 0.2]}
             position={item.position}
             onClick={() => onRemoveComponent(index)}
           >
+            <boxGeometry args={[0.6, 0.3, 0.2]} />
             <meshStandardMaterial 
               color={item.component.color}
               emissive={item.component.color}
               emissiveIntensity={0.2}
             />
-          </Box>
+          </mesh>
         ))}
         
         <OrbitControls enableZoom={true} enablePan={true} />
