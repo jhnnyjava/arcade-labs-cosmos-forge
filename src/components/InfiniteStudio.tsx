@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Text, Float, Sphere, Box, Cylinder, Environment, Effects } from "@react-three/drei";
+import { OrbitControls, Text, Float, Sphere, Box, Cylinder } from "@react-three/drei";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useMemo } from "react";
@@ -213,10 +213,8 @@ const InfiniteStudio = () => {
       {/* 3D Scene */}
       <div className="h-[600px] relative">
         <Canvas camera={{ position: [0, 5, 8], fov: 60 }}>
-          <Environment preset="studio" />
-          
-          {/* Lighting */}
-          <ambientLight intensity={0.4} />
+          {/* Lighting Setup */}
+          <ambientLight intensity={0.4} color="#4A90E2" />
           <pointLight position={[10, 10, 10]} intensity={1} color="#6A00FF" />
           <pointLight position={[-10, -10, -10]} intensity={0.8} color="#FF6B35" />
           <spotLight position={[0, 10, 0]} intensity={2} color="#00D4FF" angle={0.3} penumbra={1} />
