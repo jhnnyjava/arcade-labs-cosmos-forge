@@ -8,6 +8,7 @@ import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PCBPlanet from "./components/PCBPlanet";
+import InfiniteStudioPage from "./pages/InfiniteStudioPage";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/pcb-planet" element={<PCBPlanet />} />
+            <Route path="/infinite-studio" element={<InfiniteStudioPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

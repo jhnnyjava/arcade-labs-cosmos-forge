@@ -173,6 +173,26 @@ const QuantumNavigation = () => {
                           </motion.div>
                         </Button>
                       </Link>
+                    ) : item.id === "infinite-studio" ? (
+                      <Link to="/infinite-studio">
+                        <Button 
+                          variant="void" 
+                          className="w-full group-hover:border-primary/60 transition-colors duration-300"
+                        >
+                          Explore
+                          <motion.div
+                            className="ml-2"
+                            animate={{ x: [0, 5, 0] }}
+                            transition={{ 
+                              duration: 2, 
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            →
+                          </motion.div>
+                        </Button>
+                      </Link>
                     ) : (
                       <Button 
                         variant="void" 
