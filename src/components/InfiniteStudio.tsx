@@ -1,14 +1,171 @@
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Text, Float, Sphere, Box, Cylinder } from "@react-three/drei";
-import { motion } from "framer-motion";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Text, Float, Sphere, Box, Cylinder, Html, Line } from "@react-three/drei";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useState, useRef, useMemo } from "react";
-import { Wrench, Printer, Cpu, Zap, Settings, Play } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useState, useRef, useMemo, useEffect } from "react";
+import { Wrench, Printer, Cpu, Zap, Settings, Play, Brain, Target, Activity, TrendingUp, Clock, CheckCircle } from "lucide-react";
 import * as THREE from "three";
 
-// Floating Service Portal Component
-const ServicePortal = ({ position, service, onSelect, isSelected }: any) => {
+// AI Optimization Visualization
+const AIOptimization = ({ isActive }: { isActive: boolean }) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const [optimization, setOptimization] = useState(0);
+  
+  useFrame((state) => {
+    if (meshRef.current && isActive) {
+      meshRef.current.rotation.y += 0.02;
+      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime) * 0.1;
+    }
+  });
+  
+  useEffect(() => {
+    if (isActive) {
+      const interval = setInterval(() => {
+        setOptimization(prev => Math.min(100, prev + Math.random() * 5));
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [isActive]);
+
+  return (
+    <Float speed={2} rotationIntensity={0.8} floatIntensity={1}>
+      <group position={[0, 3, 0]}>
+        <mesh ref={meshRef}>
+          <dodecahedronGeometry args={[0.8]} />
+          <meshStandardMaterial 
+            color="#39FF14"
+            emissive="#39FF14"
+            emissiveIntensity={isActive ? 0.6 : 0.2}
+            transparent
+            opacity={0.8}
+            wireframe={true}
+          />
+        </mesh>
+        
+        {/* Data Flow Lines */}
+        {isActive && Array.from({ length: 8 }).map((_, i) => (
+          <Line
+            key={i}
+            points={[
+              [0, 0, 0],
+              [
+                Math.cos(i * Math.PI / 4) * 2,
+                Math.sin(i * Math.PI / 4) * 0.5,
+                Math.sin(i * Math.PI / 4) * 2
+              ]
+            ]}
+            color="#39FF14"
+            lineWidth={2}
+            transparent
+            opacity={0.6}
+          />
+        ))}
+        
+        <Html position={[0, -1.5, 0]} center>
+          <div className="bg-card/90 backdrop-blur-md border border-border rounded-lg p-3 text-center min-w-[200px]">
+            <div className="text-sm font-semibold text-primary mb-2">AI Optimization</div>
+            <Progress value={optimization} className="w-full mb-2" />
+            <div className="text-xs text-muted-foreground">{optimization.toFixed(1)}% Efficiency</div>
+          </div>
+        </Html>
+      </group>
+    </Float>
+  );
+};
+
+// Real-time Fabrication Monitor
+const FabricationMonitor = ({ service, isActive }: { service: any, isActive: boolean }) => {
+  const [metrics, setMetrics] = useState({
+    progress: 0,
+    speed: 0,
+    temperature: 0,
+    quality: 0
+  });
+
+  useEffect(() => {
+    if (isActive) {
+      const interval = setInterval(() => {
+        setMetrics(prev => ({
+          progress: Math.min(100, prev.progress + Math.random() * 2),
+          speed: 150 + Math.random() * 50,
+          temperature: 220 + Math.random() * 20,
+          quality: 95 + Math.random() * 5
+        }));
+      }, 300);
+      return () => clearInterval(interval);
+    }
+  }, [isActive]);
+
+  if (!isActive) return null;
+
+  return (
+    <Html position={[0, -2, 3]} center>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-card/95 backdrop-blur-md border border-border rounded-xl p-4 min-w-[300px]"
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="w-5 h-5 text-primary" />
+          <h3 className="font-semibold">Real-time Monitoring</h3>
+          <Badge variant="outline" className="ml-auto">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
+            Live
+          </Badge>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Progress</span>
+              <span className="text-primary">{metrics.progress.toFixed(1)}%</span>
+            </div>
+            <Progress value={metrics.progress} className="h-2" />
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Quality</span>
+              <span className="text-green-500">{metrics.quality.toFixed(1)}%</span>
+            </div>
+            <Progress value={metrics.quality} className="h-2" />
+          </div>
+          
+          <div className="text-center">
+            <div className="text-xl font-bold text-orange-500">{metrics.speed.toFixed(0)}</div>
+            <div className="text-xs text-muted-foreground">mm/min</div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-xl font-bold text-red-500">{metrics.temperature.toFixed(0)}°C</div>
+            <div className="text-xs text-muted-foreground">Temp</div>
+          </div>
+        </div>
+      </motion.div>
+    </Html>
+  );
+};
+
+// Enhanced Service Portal Component
+const ServicePortal = ({ position, service, onSelect, isSelected, isActive }: any) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const particlesRef = useRef<THREE.Group>(null);
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += isSelected ? 0.02 : 0.005;
+      if (isSelected) {
+        meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+      }
+    }
+    
+    if (particlesRef.current && isSelected) {
+      particlesRef.current.rotation.y += 0.01;
+    }
+  });
   
   return (
     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.8}>
@@ -41,23 +198,25 @@ const ServicePortal = ({ position, service, onSelect, isSelected }: any) => {
           />
         </mesh>
         
-        {/* Floating particles around portal */}
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Float key={i} speed={3 + i} rotationIntensity={1}>
-            <mesh position={[
-              Math.cos(i * Math.PI / 3) * 1.5,
-              Math.sin(i * Math.PI / 3) * 0.3,
-              Math.sin(i * Math.PI / 3) * 1.5
-            ]}>
-              <sphereGeometry args={[0.05]} />
-              <meshStandardMaterial 
-                color={service.color}
-                emissive={service.color}
-                emissiveIntensity={0.8}
-              />
-            </mesh>
-          </Float>
-        ))}
+        {/* Enhanced particle system */}
+        <group ref={particlesRef}>
+          {Array.from({ length: isSelected ? 12 : 6 }).map((_, i) => (
+            <Float key={i} speed={3 + i} rotationIntensity={1}>
+              <mesh position={[
+                Math.cos(i * Math.PI / (isSelected ? 6 : 3)) * (isSelected ? 2 : 1.5),
+                Math.sin(i * Math.PI / (isSelected ? 6 : 3)) * 0.3,
+                Math.sin(i * Math.PI / (isSelected ? 6 : 3)) * (isSelected ? 2 : 1.5)
+              ]}>
+                <sphereGeometry args={[isSelected ? 0.08 : 0.05]} />
+                <meshStandardMaterial 
+                  color={service.color}
+                  emissive={service.color}
+                  emissiveIntensity={0.8}
+                />
+              </mesh>
+            </Float>
+          ))}
+        </group>
         
         <Text
           position={[0, -1.2, 0]}
@@ -69,57 +228,115 @@ const ServicePortal = ({ position, service, onSelect, isSelected }: any) => {
         >
           {service.name}
         </Text>
+        
+        {/* Service status indicator */}
+        <Html position={[1.2, 0.5, 0]} center>
+          <div className="flex items-center gap-1">
+            <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
+            <span className="text-xs text-muted-foreground">{isActive ? 'Active' : 'Ready'}</span>
+          </div>
+        </Html>
+        
+        {/* Real-time monitoring for active service */}
+        <FabricationMonitor service={service} isActive={isActive} />
       </group>
     </Float>
   );
 };
 
-// 3D Printing Visualization
+// Enhanced 3D Printing Visualization
 const PrintingVisualization = ({ isActive }: { isActive: boolean }) => {
-  const layerCount = 12;
+  const layerCount = 15;
+  const [currentLayer, setCurrentLayer] = useState(0);
+  
+  useEffect(() => {
+    if (isActive) {
+      const interval = setInterval(() => {
+        setCurrentLayer(prev => (prev + 1) % layerCount);
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [isActive, layerCount]);
+
   const layers = useMemo(() => 
     Array.from({ length: layerCount }, (_, i) => ({
-      y: (i - layerCount / 2) * 0.1,
-      opacity: isActive ? Math.min(1, (i + 1) / layerCount) : 0.3,
-      scale: isActive ? 1 - (i * 0.02) : 0.8
-    })), [isActive, layerCount]
+      y: (i - layerCount / 2) * 0.08,
+      opacity: isActive ? (i <= currentLayer ? 1 : 0.2) : 0.3,
+      scale: isActive ? 1 - (i * 0.015) : 0.8,
+      color: i <= currentLayer ? "#FF6B35" : "#666"
+    })), [isActive, layerCount, currentLayer]
   );
 
   return (
     <Float speed={1} rotationIntensity={0.2}>
-      <group position={[0, 0, 0]}>
+      <group position={[-3, 1, 0]}>
+        {/* Print bed */}
+        <mesh position={[0, -1.2, 0]}>
+          <boxGeometry args={[2, 0.1, 2]} />
+          <meshStandardMaterial color="#333" metalness={0.8} roughness={0.2} />
+        </mesh>
+        
+        {/* Printing layers */}
         {layers.map((layer, i) => (
-          <mesh key={i} position={[0, layer.y, 0]} scale={[layer.scale, 0.05, layer.scale]}>
+          <mesh key={i} position={[0, layer.y, 0]} scale={[layer.scale, 0.04, layer.scale]}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial 
-              color="#FF6B35"
-              emissive="#FF6B35"
+              color={layer.color}
+              emissive={layer.color}
               emissiveIntensity={layer.opacity * 0.3}
               transparent
               opacity={layer.opacity}
             />
           </mesh>
         ))}
+        
+        {/* Print nozzle */}
+        {isActive && (
+          <mesh position={[0, currentLayer * 0.08 - layerCount * 0.04 + 0.5, 0]}>
+            <coneGeometry args={[0.1, 0.3, 8]} />
+            <meshStandardMaterial 
+              color="#FF6B35"
+              emissive="#FF6B35"
+              emissiveIntensity={0.6}
+            />
+          </mesh>
+        )}
       </group>
     </Float>
   );
 };
 
-// Fabrication Assembly Line
+// Enhanced Assembly Line
 const AssemblyLine = ({ isActive }: { isActive: boolean }) => {
   const componentsRef = useRef<THREE.Group>(null);
+  const [assemblyProgress, setAssemblyProgress] = useState(0);
   
+  useFrame((state) => {
+    if (componentsRef.current && isActive) {
+      componentsRef.current.rotation.y += 0.005;
+    }
+  });
+  
+  useEffect(() => {
+    if (isActive) {
+      const interval = setInterval(() => {
+        setAssemblyProgress(prev => (prev + 1) % 100);
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [isActive]);
+
   const components = [
-    { pos: [-2, 0, 0], color: "#6A00FF", size: [0.3, 0.2, 0.1] },
-    { pos: [-1, 0, 0], color: "#FF6B35", size: [0.4, 0.3, 0.2] },
-    { pos: [0, 0, 0], color: "#00D4FF", size: [0.5, 0.4, 0.3] },
-    { pos: [1, 0, 0], color: "#39FF14", size: [0.4, 0.3, 0.2] },
-    { pos: [2, 0, 0], color: "#FF1493", size: [0.3, 0.2, 0.1] },
+    { pos: [-2, 0, 0], color: "#6A00FF", size: [0.3, 0.2, 0.1], assembled: assemblyProgress > 20 },
+    { pos: [-1, 0, 0], color: "#FF6B35", size: [0.4, 0.3, 0.2], assembled: assemblyProgress > 40 },
+    { pos: [0, 0, 0], color: "#00D4FF", size: [0.5, 0.4, 0.3], assembled: assemblyProgress > 60 },
+    { pos: [1, 0, 0], color: "#39FF14", size: [0.4, 0.3, 0.2], assembled: assemblyProgress > 80 },
+    { pos: [2, 0, 0], color: "#FF1493", size: [0.3, 0.2, 0.1], assembled: assemblyProgress > 95 },
   ];
 
   return (
     <Float speed={1.5} rotationIntensity={0.3}>
-      <group ref={componentsRef} position={[0, 0, 2]}>
+      <group ref={componentsRef} position={[3, 1, 0]}>
         {/* Conveyor Belt */}
         <mesh position={[0, -0.5, 0]} rotation={[0, 0, 0]}>
           <boxGeometry args={[5, 0.1, 0.8]} />
@@ -128,19 +345,30 @@ const AssemblyLine = ({ isActive }: { isActive: boolean }) => {
         
         {/* Moving Components */}
         {components.map((comp, i) => (
-          <Float key={i} speed={2 + i * 0.5} rotationIntensity={isActive ? 1 : 0.2}>
-            <mesh position={comp.pos as [number, number, number]}>
+          <Float key={i} speed={comp.assembled ? 0.5 : 2 + i * 0.5} rotationIntensity={isActive ? 1 : 0.2}>
+            <mesh 
+              position={comp.pos as [number, number, number]}
+              scale={comp.assembled ? [1.1, 1.1, 1.1] : [1, 1, 1]}
+            >
               <boxGeometry args={comp.size as [number, number, number]} />
               <meshStandardMaterial 
                 color={comp.color}
                 emissive={comp.color}
-                emissiveIntensity={isActive ? 0.3 : 0.1}
+                emissiveIntensity={comp.assembled ? 0.5 : (isActive ? 0.3 : 0.1)}
                 metalness={0.6}
                 roughness={0.3}
               />
             </mesh>
           </Float>
         ))}
+        
+        {/* Assembly progress indicator */}
+        <Html position={[0, 1, 0]} center>
+          <div className="bg-card/90 backdrop-blur-md border border-border rounded-lg p-2">
+            <div className="text-xs font-semibold mb-1">Assembly Progress</div>
+            <Progress value={assemblyProgress} className="w-24 h-2" />
+          </div>
+        </Html>
       </group>
     </Float>
   );
@@ -149,6 +377,7 @@ const AssemblyLine = ({ isActive }: { isActive: boolean }) => {
 const InfiniteStudio = () => {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [activeDemo, setActiveDemo] = useState<string | null>(null);
+  const [optimizationLevel, setOptimizationLevel] = useState(0);
 
   const services = [
     {
@@ -156,30 +385,49 @@ const InfiniteStudio = () => {
       name: "3D Printing",
       color: "#FF6B35",
       description: "Rapid prototyping and custom manufacturing with multi-material capabilities",
-      position: [-3, 1, 0]
+      position: [-3, 1, 0],
+      features: ["Multi-material support", "0.1mm precision", "24/7 monitoring", "AI quality control"],
+      estimatedTime: "2-8 hours",
+      accuracy: "±0.1mm"
     },
     {
       id: "pcb-fabrication",
       name: "PCB Fabrication",
       color: "#6A00FF",
       description: "Professional circuit board design and manufacturing services",
-      position: [3, 1, 0]
+      position: [3, 1, 0],
+      features: ["Multi-layer boards", "HDI technology", "Flex-rigid PCBs", "DFM analysis"],
+      estimatedTime: "3-5 days",
+      accuracy: "Class 6/6"
     },
     {
       id: "assembly",
       name: "Assembly Services",
       color: "#00D4FF",
       description: "Complete product assembly from components to finished devices",
-      position: [0, 2, -2]
+      position: [0, 2, -2],
+      features: ["SMT assembly", "Through-hole", "Testing & QA", "Packaging"],
+      estimatedTime: "1-3 days",
+      accuracy: "99.8% yield"
     },
     {
       id: "prototyping",
       name: "Rapid Prototyping",
       color: "#39FF14",
       description: "From concept to functional prototype in record time",
-      position: [0, 0, 3]
+      position: [0, 0, 3],
+      features: ["CAD optimization", "Material selection", "Iterative design", "Cost analysis"],
+      estimatedTime: "1-2 weeks",
+      accuracy: "Functional prototype"
     }
   ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOptimizationLevel(prev => Math.min(100, prev + Math.random() * 2));
+    }, 300);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -205,9 +453,31 @@ const InfiniteStudio = () => {
             <span className="text-gradient-pcb">Infinite</span> Studio
           </h1>
         </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           Advanced fabrication services with real-time 3D visualization and AI-powered optimization
         </p>
+        
+        {/* Global optimization indicator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mt-6 max-w-md mx-auto"
+        >
+          <Card className="bg-card/50 backdrop-blur-md">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-2">
+                <Brain className="w-5 h-5 text-primary" />
+                <span className="font-semibold">Global AI Optimization</span>
+                <Badge variant="outline" className="ml-auto">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  {optimizationLevel.toFixed(1)}%
+                </Badge>
+              </div>
+              <Progress value={optimizationLevel} className="h-2" />
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
 
       {/* 3D Scene */}
@@ -227,12 +497,16 @@ const InfiniteStudio = () => {
               service={service}
               onSelect={setSelectedService}
               isSelected={selectedService?.id === service.id}
+              isActive={activeDemo === service.id}
             />
           ))}
 
           {/* Active Demonstrations */}
           {activeDemo === "3d-printing" && <PrintingVisualization isActive={true} />}
           {activeDemo === "assembly" && <AssemblyLine isActive={true} />}
+          
+          {/* AI Optimization Visualization */}
+          <AIOptimization isActive={!!activeDemo} />
 
           {/* Central Hub */}
           <Float speed={1} rotationIntensity={0.2} floatIntensity={0.5}>
@@ -265,74 +539,144 @@ const InfiniteStudio = () => {
         </Canvas>
       </div>
 
-      {/* Service Info Panel */}
-      {selectedService && (
-        <motion.div
-          initial={{ opacity: 0, x: 300 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 300 }}
-          className="fixed right-6 top-1/2 -translate-y-1/2 w-80 bg-card/90 backdrop-blur-md border border-border rounded-2xl p-6 z-20"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div 
-              className="w-4 h-4 rounded-full"
-              style={{ backgroundColor: selectedService.color }}
-            />
-            <h3 className="font-space text-xl font-semibold">{selectedService.name}</h3>
-          </div>
-          
-          <p className="text-muted-foreground mb-6 leading-relaxed">
-            {selectedService.description}
-          </p>
-          
-          <div className="space-y-3">
-            <Button 
-              variant="quantum" 
-              className="w-full"
-              onClick={() => setActiveDemo(selectedService.id)}
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Start Demo
-            </Button>
-            
-            <Button variant="outline" className="w-full">
-              <Settings className="w-4 h-4 mr-2" />
-              Configure Service
-            </Button>
-          </div>
-          
-          <button
-            onClick={() => setSelectedService(null)}
-            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+      {/* Enhanced Service Info Panel */}
+      <AnimatePresence>
+        {selectedService && (
+          <motion.div
+            initial={{ opacity: 0, x: 300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 300 }}
+            className="fixed right-6 top-1/2 -translate-y-1/2 w-96 z-20"
           >
-            ×
-          </button>
-        </motion.div>
-      )}
+            <Card className="bg-card/90 backdrop-blur-md border border-border">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: selectedService.color }}
+                  />
+                  <CardTitle className="font-space">{selectedService.name}</CardTitle>
+                  <button
+                    onClick={() => setSelectedService(null)}
+                    className="ml-auto text-muted-foreground hover:text-foreground"
+                  >
+                    ×
+                  </button>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  {selectedService.description}
+                </p>
+                
+                {/* Service metrics */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-muted/30 rounded-lg">
+                    <Clock className="w-5 h-5 mx-auto mb-1 text-primary" />
+                    <div className="text-sm font-semibold">{selectedService.estimatedTime}</div>
+                    <div className="text-xs text-muted-foreground">Est. Time</div>
+                  </div>
+                  
+                  <div className="text-center p-3 bg-muted/30 rounded-lg">
+                    <Target className="w-5 h-5 mx-auto mb-1 text-primary" />
+                    <div className="text-sm font-semibold">{selectedService.accuracy}</div>
+                    <div className="text-xs text-muted-foreground">Accuracy</div>
+                  </div>
+                </div>
+                
+                {/* Features */}
+                <div>
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    Key Features
+                  </h4>
+                  <div className="space-y-1">
+                    {selectedService.features.map((feature: string, i: number) => (
+                      <div key={i} className="text-sm text-muted-foreground flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Actions */}
+                <div className="space-y-3 pt-4">
+                  <Button 
+                    variant="quantum" 
+                    className="w-full"
+                    onClick={() => setActiveDemo(selectedService.id)}
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    {activeDemo === selectedService.id ? 'Stop Demo' : 'Start Demo'}
+                  </Button>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button variant="outline" className="w-full">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Configure
+                    </Button>
+                    <Button variant="outline" className="w-full">
+                      <Zap className="w-4 h-4 mr-2" />
+                      Optimize
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Quick Actions */}
+      {/* Quick Actions Dashboard */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-20"
+        className="fixed bottom-6 left-6 right-6 z-20"
       >
-        <Button variant="quantum" className="group">
-          <Printer className="w-4 h-4 mr-2" />
-          Request Quote
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="ml-2"
-          >
-            <Zap className="w-4 h-4" />
-          </motion.div>
-        </Button>
-        
-        <Button variant="cosmos">
-          <Cpu className="w-4 h-4 mr-2" />
-          Upload Design
-        </Button>
+        <div className="max-w-6xl mx-auto">
+          <Card className="bg-card/90 backdrop-blur-md">
+            <CardContent className="p-4">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-6">
+                  <Button variant="quantum" className="group">
+                    <Printer className="w-4 h-4 mr-2" />
+                    Request Quote
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="ml-2"
+                    >
+                      <Zap className="w-4 h-4" />
+                    </motion.div>
+                  </Button>
+                  
+                  <Button variant="cosmos">
+                    <Cpu className="w-4 h-4 mr-2" />
+                    Upload Design
+                  </Button>
+                  
+                  <Button variant="outline">
+                    <Brain className="w-4 h-4 mr-2" />
+                    AI Assistant
+                  </Button>
+                </div>
+                
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <span>All Systems Online</span>
+                  </div>
+                  <div className="text-muted-foreground">
+                    {activeDemo ? `Demo: ${services.find(s => s.id === activeDemo)?.name}` : 'Ready for Production'}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </motion.div>
     </div>
   );
