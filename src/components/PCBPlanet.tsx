@@ -117,7 +117,7 @@ function PCBCanvas({ selectedComponents, onComponentDrop, onRemoveComponent }: {
         </Box>
         
         {/* Grid Lines */}
-        <gridHelper args={[8, 20, '#6A00FF', '#6A00FF']} position={[0, -0.4, 0]} />
+        <primitive object={new THREE.GridHelper(8, 20, '#6A00FF', '#6A00FF')} position={[0, -0.4, 0]} />
         
         {/* Placed Components */}
         {selectedComponents.map((item, index) => (
