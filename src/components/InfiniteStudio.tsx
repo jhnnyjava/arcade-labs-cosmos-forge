@@ -391,6 +391,49 @@ const InfiniteStudio = () => {
     qualityScore: 0,
     throughput: 0
   });
+  const [jobQueue, setJobQueue] = useState([
+    { id: 1, service: "3D Printing", status: "running", progress: 75, priority: "high" },
+    { id: 2, service: "PCB Fabrication", status: "queued", progress: 0, priority: "medium" },
+    { id: 3, service: "Assembly", status: "queued", progress: 0, priority: "low" },
+    { id: 4, service: "Prototyping", status: "running", progress: 45, priority: "high" },
+    { id: 5, service: "3D Printing", status: "queued", progress: 0, priority: "medium" }
+  ]);
+
+  const handleGlobalDemo = () => {
+    if (activeDemo) {
+      setActiveDemo(null);
+    } else {
+      setActiveDemo("global");
+      // Start all service demos
+      setTimeout(() => setActiveDemo("3d-printing"), 500);
+      setTimeout(() => setActiveDemo("pcb-fabrication"), 1000);
+      setTimeout(() => setActiveDemo("assembly"), 1500);
+      setTimeout(() => setActiveDemo("prototyping"), 2000);
+    }
+  };
+
+  const handleServiceDemo = (serviceId: string) => {
+    if (activeDemo === serviceId) {
+      setActiveDemo(null);
+    } else {
+      setActiveDemo(serviceId);
+    }
+  };
+
+  const startNewJob = (serviceId: string) => {
+    const newJob = {
+      id: Date.now(),
+      service: services.find(s => s.id === serviceId)?.name || serviceId,
+      status: "queued",
+      progress: 0,
+      priority: "medium"
+    };
+    setJobQueue(prev => [...prev, newJob]);
+  };
+
+  const removeJob = (jobId: number) => {
+    setJobQueue(prev => prev.filter(job => job.id !== jobId));
+  };
 
   const services = [
     {
@@ -440,7 +483,7 @@ const InfiniteStudio = () => {
       setOptimizationLevel(prev => Math.min(100, prev + Math.random() * 2));
       setSystemMetrics(prev => ({
         activeMachines: Math.floor(Math.random() * 8) + 12,
-        totalJobs: Math.floor(Math.random() * 50) + 150,
+        totalJobs: jobQueue.length,
         completedToday: Math.floor(Math.random() * 30) + 45,
         efficiency: 85 + Math.random() * 15,
         uptime: 95 + Math.random() * 5
@@ -451,9 +494,16 @@ const InfiniteStudio = () => {
         qualityScore: 96 + Math.random() * 4,
         throughput: 80 + Math.random() * 40
       }));
+      
+      // Update job progress
+      setJobQueue(prev => prev.map(job => 
+        job.status === "running" 
+          ? { ...job, progress: Math.min(100, job.progress + Math.random() * 5) }
+          : job
+      ));
     }, 500);
     return () => clearInterval(interval);
-  }, []);
+  }, [jobQueue.length]);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -618,7 +668,7 @@ const InfiniteStudio = () => {
         </Card>
       </motion.div>
 
-      {/* Service Control Panel */}
+      {/* Enhanced Service Control Panel */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -630,15 +680,26 @@ const InfiniteStudio = () => {
             <CardTitle className="text-lg flex items-center gap-2">
               <Settings className="w-5 h-5 text-primary" />
               Studio Controls
+              {activeDemo && <Badge variant="secondary" className="animate-pulse">Live</Badge>}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button 
               className="w-full" 
               variant={activeDemo ? "destructive" : "default"}
-              onClick={() => setActiveDemo(activeDemo ? null : "global")}
+              onClick={handleGlobalDemo}
             >
-              {activeDemo ? "Stop All Demos" : "Start Global Demo"}
+              {activeDemo ? (
+                <>
+                  <Zap className="w-4 h-4 mr-2" />
+                  Stop All Demos
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Global Demo
+                </>
+              )}
             </Button>
             
             <div className="grid grid-cols-2 gap-2">
@@ -647,18 +708,75 @@ const InfiniteStudio = () => {
                   key={service.id}
                   variant={activeDemo === service.id ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setActiveDemo(activeDemo === service.id ? null : service.id)}
-                  className="text-xs"
+                  onClick={() => handleServiceDemo(service.id)}
+                  className="text-xs relative"
+                  style={{
+                    borderColor: activeDemo === service.id ? service.color : undefined,
+                    backgroundColor: activeDemo === service.id ? `${service.color}20` : undefined
+                  }}
                 >
+                  {activeDemo === service.id && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  )}
                   {service.name.split(' ')[0]}
                 </Button>
               ))}
             </div>
             
-            <div className="pt-2 border-t">
+            <div className="pt-2 border-t space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span>Jobs in Queue</span>
-                <Badge variant="secondary">{systemMetrics.totalJobs}</Badge>
+                <Badge variant="secondary">{jobQueue.length}</Badge>
+              </div>
+              
+              {/* Job Queue Management */}
+              <div className="max-h-32 overflow-y-auto space-y-1">
+                {jobQueue.slice(0, 3).map((job) => (
+                  <div key={job.id} className="text-xs p-2 bg-muted/30 rounded flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        job.status === 'running' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
+                      }`} />
+                      <span className="truncate">{job.service}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {job.status === 'running' && (
+                        <span className="text-green-600">{job.progress.toFixed(0)}%</span>
+                      )}
+                      <button
+                        onClick={() => removeJob(job.id)}
+                        className="text-red-500 hover:text-red-700 ml-1"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {jobQueue.length > 3 && (
+                  <div className="text-xs text-muted-foreground text-center py-1">
+                    +{jobQueue.length - 3} more jobs
+                  </div>
+                )}
+              </div>
+              
+              {/* Quick Add Job */}
+              <div className="grid grid-cols-2 gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => startNewJob("3d-printing")}
+                  className="text-xs"
+                >
+                  + 3D Job
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => startNewJob("pcb-fabrication")}
+                  className="text-xs"
+                >
+                  + PCB Job
+                </Button>
               </div>
             </div>
           </CardContent>
