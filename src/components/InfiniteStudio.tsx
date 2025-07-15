@@ -378,6 +378,19 @@ const InfiniteStudio = () => {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [activeDemo, setActiveDemo] = useState<string | null>(null);
   const [optimizationLevel, setOptimizationLevel] = useState(0);
+  const [systemMetrics, setSystemMetrics] = useState({
+    activeMachines: 0,
+    totalJobs: 0,
+    completedToday: 0,
+    efficiency: 0,
+    uptime: 0
+  });
+  const [liveData, setLiveData] = useState({
+    powerConsumption: 0,
+    materialUsage: 0,
+    qualityScore: 0,
+    throughput: 0
+  });
 
   const services = [
     {
@@ -425,7 +438,20 @@ const InfiniteStudio = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setOptimizationLevel(prev => Math.min(100, prev + Math.random() * 2));
-    }, 300);
+      setSystemMetrics(prev => ({
+        activeMachines: Math.floor(Math.random() * 8) + 12,
+        totalJobs: Math.floor(Math.random() * 50) + 150,
+        completedToday: Math.floor(Math.random() * 30) + 45,
+        efficiency: 85 + Math.random() * 15,
+        uptime: 95 + Math.random() * 5
+      }));
+      setLiveData(prev => ({
+        powerConsumption: 2500 + Math.random() * 1000,
+        materialUsage: Math.random() * 100,
+        qualityScore: 96 + Math.random() * 4,
+        throughput: 80 + Math.random() * 40
+      }));
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
@@ -539,145 +565,235 @@ const InfiniteStudio = () => {
         </Canvas>
       </div>
 
-      {/* Enhanced Service Info Panel */}
+      {/* Live Metrics Dashboard */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+        className="fixed bottom-6 left-6 z-30"
+      >
+        <Card className="bg-card/90 backdrop-blur-md border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Activity className="w-5 h-5 text-primary" />
+              Live Metrics Dashboard
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">{systemMetrics.activeMachines}</div>
+                <div className="text-xs text-muted-foreground">Active Machines</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-500">{systemMetrics.completedToday}</div>
+                <div className="text-xs text-muted-foreground">Completed Today</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-500">{liveData.powerConsumption.toFixed(0)}W</div>
+                <div className="text-xs text-muted-foreground">Power Usage</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-500">{liveData.qualityScore.toFixed(1)}%</div>
+                <div className="text-xs text-muted-foreground">Quality Score</div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>System Efficiency</span>
+                <span className="text-primary">{systemMetrics.efficiency.toFixed(1)}%</span>
+              </div>
+              <Progress value={systemMetrics.efficiency} className="h-2" />
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Uptime</span>
+                <span className="text-green-500">{systemMetrics.uptime.toFixed(1)}%</span>
+              </div>
+              <Progress value={systemMetrics.uptime} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Service Control Panel */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+        className="fixed bottom-6 right-6 z-30"
+      >
+        <Card className="bg-card/90 backdrop-blur-md border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Settings className="w-5 h-5 text-primary" />
+              Studio Controls
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button 
+              className="w-full" 
+              variant={activeDemo ? "destructive" : "default"}
+              onClick={() => setActiveDemo(activeDemo ? null : "global")}
+            >
+              {activeDemo ? "Stop All Demos" : "Start Global Demo"}
+            </Button>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {services.map((service) => (
+                <Button
+                  key={service.id}
+                  variant={activeDemo === service.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveDemo(activeDemo === service.id ? null : service.id)}
+                  className="text-xs"
+                >
+                  {service.name.split(' ')[0]}
+                </Button>
+              ))}
+            </div>
+            
+            <div className="pt-2 border-t">
+              <div className="flex items-center justify-between text-sm">
+                <span>Jobs in Queue</span>
+                <Badge variant="secondary">{systemMetrics.totalJobs}</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Service Details Panel */}
       <AnimatePresence>
         {selectedService && (
           <motion.div
-            initial={{ opacity: 0, x: 300 }}
+            initial={{ opacity: 0, x: 400 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 300 }}
-            className="fixed right-6 top-1/2 -translate-y-1/2 w-96 z-20"
+            exit={{ opacity: 0, x: 400 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 w-96 h-full bg-card/95 backdrop-blur-xl border-l border-border shadow-2xl z-40 overflow-y-auto"
           >
-            <Card className="bg-card/90 backdrop-blur-md border border-border">
-              <CardHeader>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div 
-                    className="w-4 h-4 rounded-full"
+                    className="w-4 h-4 rounded-full" 
                     style={{ backgroundColor: selectedService.color }}
                   />
-                  <CardTitle className="font-space">{selectedService.name}</CardTitle>
-                  <button
-                    onClick={() => setSelectedService(null)}
-                    className="ml-auto text-muted-foreground hover:text-foreground"
-                  >
-                    ×
-                  </button>
+                  <h2 className="text-2xl font-bold">{selectedService.name}</h2>
                 </div>
-              </CardHeader>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setSelectedService(null)}
+                >
+                  ✕
+                </Button>
+              </div>
               
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed">
-                  {selectedService.description}
-                </p>
-                
-                {/* Service metrics */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-muted/30 rounded-lg">
-                    <Clock className="w-5 h-5 mx-auto mb-1 text-primary" />
-                    <div className="text-sm font-semibold">{selectedService.estimatedTime}</div>
-                    <div className="text-xs text-muted-foreground">Est. Time</div>
-                  </div>
+              <div className="space-y-6">
+                <div>
+                  <p className="text-muted-foreground mb-4">{selectedService.description}</p>
                   
-                  <div className="text-center p-3 bg-muted/30 rounded-lg">
-                    <Target className="w-5 h-5 mx-auto mb-1 text-primary" />
-                    <div className="text-sm font-semibold">{selectedService.accuracy}</div>
-                    <div className="text-xs text-muted-foreground">Accuracy</div>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <Card>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-primary" />
+                          <div>
+                            <div className="text-sm text-muted-foreground">Est. Time</div>
+                            <div className="font-semibold">{selectedService.estimatedTime}</div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2">
+                          <Target className="w-4 h-4 text-primary" />
+                          <div>
+                            <div className="text-sm text-muted-foreground">Accuracy</div>
+                            <div className="font-semibold">{selectedService.accuracy}</div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
                 
-                {/* Features */}
                 <div>
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    Key Features
-                  </h4>
-                  <div className="space-y-1">
-                    {selectedService.features.map((feature: string, i: number) => (
-                      <div key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                        {feature}
+                  <h3 className="font-semibold mb-3">Features & Capabilities</h3>
+                  <div className="space-y-2">
+                    {selectedService.features.map((feature: string, index: number) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        <span className="text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 
-                {/* Actions */}
-                <div className="space-y-3 pt-4">
+                <div className="space-y-4">
                   <Button 
-                    variant="quantum" 
                     className="w-full"
                     onClick={() => setActiveDemo(selectedService.id)}
                   >
                     <Play className="w-4 h-4 mr-2" />
-                    {activeDemo === selectedService.id ? 'Stop Demo' : 'Start Demo'}
+                    Start Live Demo
                   </Button>
                   
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" className="w-full">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Configure
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Zap className="w-4 h-4 mr-2" />
-                      Optimize
-                    </Button>
-                  </div>
+                  {activeDemo === selectedService.id && (
+                    <Card className="border-primary/20 bg-primary/5">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                          <span className="font-semibold text-green-600">Demo Active</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Real-time fabrication simulation running with live metrics and AI optimization.
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setActiveDemo(null)}
+                        >
+                          Stop Demo
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+                
+                {/* Real-time service metrics */}
+                <Card className="bg-muted/50">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Live Service Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span>Throughput</span>
+                      <span className="font-semibold">{liveData.throughput.toFixed(0)} units/hr</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Material Usage</span>
+                      <span className="font-semibold">{liveData.materialUsage.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Status</span>
+                      <Badge variant={activeDemo === selectedService.id ? "default" : "secondary"}>
+                        {activeDemo === selectedService.id ? "Running" : "Standby"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Quick Actions Dashboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="fixed bottom-6 left-6 right-6 z-20"
-      >
-        <div className="max-w-6xl mx-auto">
-          <Card className="bg-card/90 backdrop-blur-md">
-            <CardContent className="p-4">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-6">
-                  <Button variant="quantum" className="group">
-                    <Printer className="w-4 h-4 mr-2" />
-                    Request Quote
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="ml-2"
-                    >
-                      <Zap className="w-4 h-4" />
-                    </motion.div>
-                  </Button>
-                  
-                  <Button variant="cosmos">
-                    <Cpu className="w-4 h-4 mr-2" />
-                    Upload Design
-                  </Button>
-                  
-                  <Button variant="outline">
-                    <Brain className="w-4 h-4 mr-2" />
-                    AI Assistant
-                  </Button>
-                </div>
-                
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span>All Systems Online</span>
-                  </div>
-                  <div className="text-muted-foreground">
-                    {activeDemo ? `Demo: ${services.find(s => s.id === activeDemo)?.name}` : 'Ready for Production'}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </motion.div>
     </div>
   );
 };
