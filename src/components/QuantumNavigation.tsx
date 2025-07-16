@@ -244,33 +244,65 @@ const QuantumNavigation = () => {
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group cursor-pointer"
               >
-                <div className="relative p-4 rounded-xl bg-card/30 backdrop-blur-md border border-border/50 hover:border-primary/50 transition-all duration-300">
-                  <div className="text-center space-y-3">
-                    <motion.div
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                      className="w-12 h-12 mx-auto rounded-xl bg-primary/20 flex items-center justify-center quantum-glow"
-                    >
-                      <item.icon className="w-6 h-6 text-primary" />
-                    </motion.div>
-                    
-                    <div>
-                      <h4 className="font-space text-sm font-semibold mb-1">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-accent font-medium">
-                        {item.subtitle}
+                {item.id === "articles-news" ? (
+                  <Link to="/articles" className="block">
+                    <div className="relative p-4 rounded-xl bg-card/30 backdrop-blur-md border border-border/50 hover:border-primary/50 transition-all duration-300">
+                      <div className="text-center space-y-3">
+                        <motion.div
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.6 }}
+                          className="w-12 h-12 mx-auto rounded-xl bg-primary/20 flex items-center justify-center quantum-glow"
+                        >
+                          <item.icon className="w-6 h-6 text-primary" />
+                        </motion.div>
+                        
+                        <div>
+                          <h4 className="font-space text-sm font-semibold mb-1">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-accent font-medium">
+                            {item.subtitle}
+                          </p>
+                        </div>
+                        
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                      
+                      {/* Hover glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="relative p-4 rounded-xl bg-card/30 backdrop-blur-md border border-border/50 hover:border-primary/50 transition-all duration-300">
+                    <div className="text-center space-y-3">
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
+                        className="w-12 h-12 mx-auto rounded-xl bg-primary/20 flex items-center justify-center quantum-glow"
+                      >
+                        <item.icon className="w-6 h-6 text-primary" />
+                      </motion.div>
+                      
+                      <div>
+                        <h4 className="font-space text-sm font-semibold mb-1">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-accent font-medium">
+                          {item.subtitle}
+                        </p>
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {item.description}
                       </p>
                     </div>
                     
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {item.description}
-                    </p>
+                    {/* Hover glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
                   </div>
-                  
-                  {/* Hover glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-                </div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -295,10 +327,12 @@ const QuantumNavigation = () => {
             </motion.div>
           </Button>
           
-          <Button variant="cosmos">
-            <GraduationCap className="w-4 h-4 mr-2" />
-            Admin Portal
-          </Button>
+          <Link to="/admin">
+            <Button variant="cosmos">
+              <GraduationCap className="w-4 h-4 mr-2" />
+              Admin Portal
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>
