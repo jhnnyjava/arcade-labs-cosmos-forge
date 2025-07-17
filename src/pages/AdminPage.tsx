@@ -1,8 +1,16 @@
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, Users, FileText, Settings } from "lucide-react";
+import AdminLogin from "@/components/AdminLogin";
 
 const AdminPage = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen pt-20 px-6">
       <div className="max-w-7xl mx-auto">
