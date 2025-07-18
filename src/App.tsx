@@ -11,6 +11,9 @@ import PCBPlanet from "./components/PCBPlanet";
 import InfiniteStudioPage from "./pages/InfiniteStudioPage";
 import AdminPage from "./pages/AdminPage";
 import ArticlesPage from "./pages/ArticlesPage";
+import RentalOrbitPage from "./pages/RentalOrbitPage";
+import FAQPage from "./pages/FAQPage";
+import AboutPage from "./pages/AboutPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +31,9 @@ const App = () => (
             <Route path="/infinite-studio" element={<InfiniteStudioPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/articles" element={<ArticlesPage />} />
+            <Route path="/rental-orbit" element={<RentalOrbitPage />} />
+            <Route path="/faq" element={<FAQPage />} />
+            <Route path="/about" element={<AboutPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
